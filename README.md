@@ -1,18 +1,21 @@
-## Getting Started
+Cyber BeatBox 🥁
+A Java-based MIDI drum machine that allows users to create, play, and adjust real-time percussion loops. 
+This project demonstrates the use of the Java Sound API (javax.sound.midi) and Swing GUI components.
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Features
+16-Instrument Grid: A 16x16 grid of checkboxes representing 16 drum instruments over 16 "ticks" or beats.
 
-## Folder Structure
+Real-time MIDI Sequencing: Uses the Java Sequencer to play back patterns with low latency.
 
-The workspace contains two folders by default, where:
+Tempo Control: Dynamic tempo adjustment (Speed up/Slow down) without stopping the music.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+Continuous Looping: Automatic looping for seamless beat creation.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+ How it Works
+The core of the application translates user input (checkboxes) into MIDI events:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+1.The Grid: Each row represents a specific MIDI instrument key (e.g., Bass Drum = 35, Closed Hi-Hat = 42).
 
-## Dependency Management
+2.The Event: When "Start" is clicked, the program iterates through the grid. If a box is checked, it creates a NOTE_ON event and a corresponding NOTE_OFF event at that specific "tick."
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+3.The Channel: Percussion is sent through Channel 9, which is the dedicated MIDI channel for drums.
