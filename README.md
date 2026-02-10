@@ -1,4 +1,4 @@
-Cyber BeatBox
+Cyber BeatBox : 
 A Java-based MIDI drum machine that allows users to create, play, and adjust real-time percussion loops. 
 This project demonstrates the use of the Java Sound API (javax.sound.midi) and Swing GUI components.
 
