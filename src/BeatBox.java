@@ -3,12 +3,16 @@ import javax.sound.midi.*;
 import javax.swing.*;
 import java.awt.*;
 
+import static javax.sound.midi.ShortMessage.*;
+
 public class BeatBox {
     // The place to store the check boxes.
     private ArrayList<JCheckBox> checkboxList ;
     private Sequencer sequencer ;
     private Sequence sequence;
     private Track track ;
+
+    
     // The name of the instruments as an array.
     String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat",
         "Open Hi-Hat", "Acoustic Snare", "Crash Cymbal", "Hand Clap",
@@ -110,13 +114,69 @@ public class BeatBox {
         }
     }
 
-    private Object changeTempo(float f) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'changeTempo'");
+    private void buildTrackAndStart() {
+        int[] TrackList ;
+
+        sequence.deleteTrack(track);
+        track = sequence.createTrack();
+
+        for(int i = 0 ; i < 16 ; i++){
+            TrackList = new int[16];
+
+            int key = instruments[i];
+
+            for(int j = 0 ; j < 16 ; j++){
+                JCheckBox jc = checkboxList.get(j + 16 * i);
+                if(jc.isSelected()){
+                    TrackList[j] = key;
+                }else{
+                    TrackList[j] = 0 ;
+                }
+            }
+
+            makeTracks(TrackList);
+            track.add(makeEvent(CONTROL_CHANGE, 1, 127, 0, 16));
+        }
+            track.add(makeEvent(PROGRAM_CHANGE,9,1,0,15));
+
+            try {
+                sequencer.setSequence(sequence);
+                sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
+                sequencer.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        
     }
 
-    private Object buildTrackAndStart() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buildTrackAndStart'");
+    private void changeTempo(float tempoMultiplier) {
+        float tempFactor = sequencer.getTempoFactor();
+        sequencer.setTempoFactor(tempFactor * tempoMultiplier);
     }
+
+    private void makeTracks(int[] list) {
+        for(int i = 0 ; i < 16 ; i++){
+            int key = list[i];
+
+            if (key != 0) {
+                track.add(makeEvent(NOTE_ON, 9, key,100 , i));
+                track.add(makeEvent(NOTE_OFF, 9, key,100 , i + 1));
+
+            }
+        }
+    }
+
+    public static MidiEvent makeEvent(int cmd, int chn1, int one, int two, int tick) {
+        MidiEvent event = null;
+        try {
+            ShortMessage msg = new ShortMessage();
+            msg.setMessage(cmd, chn1, one, two);
+            event = new MidiEvent(msg, tick);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return event;
+    }
+    
+    
 }
