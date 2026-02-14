@@ -2,6 +2,10 @@ import java.util.*;
 import javax.sound.midi.*;
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import static javax.sound.midi.ShortMessage.*;
 
@@ -61,6 +65,15 @@ public class BeatBox {
         JButton downTempo = new JButton("Tempo Down");
         downTempo.addActionListener(e -> changeTempo(0.97f));
         buttonBox.add(downTempo);
+
+        // Button to serialize the patten beat
+        JButton serializeIt = new JButton("Serialize Pattern");
+        serializeIt.addActionListener(e -> writeFile());
+        buttonBox.add(serializeIt);
+
+        JButton readIt = new JButton("Open File");
+        readIt.addActionListener(e -> readFile());
+        buttonBox.add(readIt);
 
         // Add names for the Boxes 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
@@ -177,6 +190,41 @@ public class BeatBox {
         }
         return event;
     }
-    
+
+    private void writeFile(){
+        boolean[] checkboxState = new boolean[256];
+
+        for(int i = 0 ; i < 256 ; i++){
+            JCheckBox check = checkboxList.get(i);
+            if(check.isSelected()){
+                checkboxState[i] = true ;
+            }
+        }
+
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("CheckBox.ser"))) {
+            os.writeObject(checkboxState);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readFile(){
+        boolean[] checkboxState = null;
+        try (ObjectInputStream is = new ObjectInputStream(new FileInputStream("CheckBox.ser"))) {
+            checkboxState = (boolean[]) is.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for(int i = 0 ; i < 256 ; i++){
+            JCheckBox check = checkboxList.get(i);
+            check.setSelected(checkboxState[i]);
+        }
+
+        sequencer.stop();
+        buildTrackAndStart();
+    }
+
+   
     
 }
